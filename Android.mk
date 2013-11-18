@@ -24,7 +24,7 @@ include $(BUILD_PREBUILT)
 LOCAL_SIGN ?= true
 
 # Add OS_priv.pem to mkbootimg dependency items
-ifeq ($(TARGET_OS_SIGNING_METHOD),isu)
+ifeq ($(TARGET_OS_SIGNING_METHOD),isu_plat2)
 $(MKBOOTIMG): OS_priv.pem
 endif
 
