@@ -55,20 +55,24 @@ endef
 
 # $(1): module name
 # $(2): source file
-# $(3): destination directory
-define include-prebuilt-with-destination-directory
+define include-prebuilt-cacert
 include $$(CLEAR_VARS)
 LOCAL_MODULE := $(1)
 LOCAL_MODULE_STEM := $(notdir $(2))
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := ETC
-LOCAL_MODULE_PATH := $(3)
+LOCAL_MODULE_PATH := $(TARGET_OUT_ETC)/security/cacerts
 LOCAL_SRC_FILES := $(2)
 include $$(BUILD_PREBUILT)
 endef
 
 cacerts := $(call all-files-under,intel_cacerts)
 
-cacerts_target_directory := $(TARGET_OUT)/etc/security/cacerts
-$(foreach cacert, $(cacerts), $(eval $(call include-prebuilt-with-destination-directory,target-cacert-$(notdir $(cacert)),$(cacert),$(cacerts_target_directory))))
+$(foreach cacert, $(cacerts), $(eval $(call include-prebuilt-cacert,target-cacert-$(notdir $(cacert)),$(cacert))))
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := intel_cacerts
+LOCAL_MODULE_TAGS := optional
+LOCAL_REQUIRED_MODULES := $(foreach cacert, $(cacerts), target-cacert-$(notdir $(cacert)))
+include $(BUILD_PHONY_PACKAGE)
 
