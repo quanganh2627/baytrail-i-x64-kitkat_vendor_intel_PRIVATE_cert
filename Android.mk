@@ -41,38 +41,3 @@ LOCAL_SIGN ?= true
 ifeq ($(TARGET_OS_SIGNING_METHOD),isu_plat2)
 $(MKBOOTIMG): OS_priv.pem
 endif
-
-#
-# Definitions for installing Certificate Authority (CA) certificates
-#
-
-define all-files-under
-$(patsubst ./%,%, \
-  $(shell cd $(LOCAL_PATH) ; \
-          find $(1) -type f) \
- )
-endef
-
-# $(1): module name
-# $(2): source file
-define include-prebuilt-cacert
-include $$(CLEAR_VARS)
-LOCAL_MODULE := $(1)
-LOCAL_MODULE_STEM := $(notdir $(2))
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE_CLASS := ETC
-LOCAL_MODULE_PATH := $(TARGET_OUT_ETC)/security/cacerts
-LOCAL_SRC_FILES := $(2)
-include $$(BUILD_PREBUILT)
-endef
-
-cacerts := $(call all-files-under,intel_cacerts)
-
-$(foreach cacert, $(cacerts), $(eval $(call include-prebuilt-cacert,target-cacert-$(notdir $(cacert)),$(cacert))))
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := intel_cacerts
-LOCAL_MODULE_TAGS := optional
-LOCAL_REQUIRED_MODULES := $(foreach cacert, $(cacerts), target-cacert-$(notdir $(cacert)))
-include $(BUILD_PHONY_PACKAGE)
-
